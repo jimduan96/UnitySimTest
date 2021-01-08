@@ -13,7 +13,13 @@ import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotBase;
 
+import com.ctre.phoenix.motion.*;
+import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.can.*;
+
+import frc.robot.PhysicsSim;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -35,6 +41,10 @@ public class DriveSubsystem extends SubsystemBase {
     private final Encoder leftEncoder ;
     private final Encoder rightEncoder ;
 
+
+    WPI_TalonSRX talon = new WPI_TalonSRX(1);
+    /** Some example logic on how one can manage an MP */
+    // MotionProfileExample _example = new MotionProfileExample(_talon);
 
 
     /**
@@ -61,20 +71,35 @@ public class DriveSubsystem extends SubsystemBase {
         rightEncoder = new Encoder(Constants.RightEncoderPorts[0], Constants.RightEncoderPorts[1], Constants.RightEncoderReversed);
         rightEncoder.setDistancePerPulse( Constants.wheelDistancePerRevolution /Constants.countsPerRevolution );    
         rightEncoder.reset();
+
+        talon.configFactoryDefault();
+
+        if ( RobotBase.isSimulation()) {
+            PhysicsSim.getInstance().addTalonSRX(talon, 0.75, 4000, true);
+        }
+
     }
 
 
 
     public void curvatureDrive(double speed, double rotation, boolean quickTurn){
       differentialDrive.curvatureDrive(speed, rotation, quickTurn);
-//        System.out.format("DriveSybsystem.arcadeDrive(%f, %f)\n", speed, rotation) ;
-  }
+    }
 
 
 
     public void arcadeDrive(double speed, double rotation){
         differentialDrive.arcadeDrive(speed, rotation);
-//        System.out.format("DriveSybsystem.arcadeDrive(%f, %f)\n", speed, rotation) ;
+
+        talon.set(speed) ;
+        double voltage = talon.getMotorOutputVoltage() ;
+        int position = talon.getSelectedSensorPosition() ;
+        int velocity = talon.getSelectedSensorVelocity() ;
+        double supplyCurrent = talon.getSupplyCurrent() ;
+        if ( position != 0.0) {
+          // System.out.format("talon velocity is %5d, position is %5d, voltage is %5.2f, current is %5.2f%n", velocity,
+          //     position, voltage, supplyCurrent);
+        }
     }
 
 

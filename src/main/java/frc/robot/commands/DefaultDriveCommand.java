@@ -59,6 +59,7 @@ public class DefaultDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
       driveSubsystem.arcadeDrive(forwardSupplier.getAsDouble(), steeringSupplier.getAsDouble());
       //driveSubsystem.curvatureDrive(forwardSupplier.getAsDouble(), steeringSupplier.getAsDouble(), false);
   }

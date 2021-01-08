@@ -13,6 +13,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AddressableLED;
+
+import edu.wpi.first.wpilibj.DigitalOutput;
+
 
 
 
@@ -28,9 +33,25 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   private Command m_autonomousCommand;
+  private Command testCommand ;
+
+  private AnalogInput ai ;
+
+
+  private DigitalOutput digOut = new DigitalOutput(7) ;
+  private boolean diSet= false ;
+
+  int wpk = 0 ;
+  
+
 
 
   public Robot() {
+
+    ai = new AnalogInput(0) ;
+    AddressableLED led = new AddressableLED(1) ;
+//    PhysicsSim.getInstance().addTalonSRX(_talon, 0.75, 4000, true);
+
   }
 
 
@@ -62,6 +83,15 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    if ( diSet ) {
+      digOut.set(true) ;
+    } else {
+      digOut.set(false) ;
+    }
+    diSet =!diSet ;
+
+
   }
 
   /**
@@ -76,6 +106,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+    wpk++;
   }
 
   /**
@@ -97,6 +128,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    wpk++ ;
   }
 
   @Override
@@ -117,7 +149,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    int wpk= 1;
+    wpk++;
 
   }
 
@@ -127,6 +159,9 @@ public class Robot extends TimedRobot {
 
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
+    testCommand = m_robotContainer.getTestCommand() ;
+    testCommand.schedule();
   }
 
   /**
@@ -134,5 +169,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    wpk++ ;
   }
+
+
+
+  public void simulationInit() {
+//    PhysicsSim.getInstance().addTalonSRX(_talon, 0.75, 7200, true);
+  }
+
+  public void simulationPeriodic() {
+    PhysicsSim.getInstance().run();
+  }
+
+
+
 }

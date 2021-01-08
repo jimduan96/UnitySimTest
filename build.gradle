@@ -1,10 +1,10 @@
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2020.3.2"
+    id "edu.wpi.first.GradleRIO" version "2021.1.1-beta-5"
 }
 
-wpi.maven.useFrcMavenLocalDevelopment = true
-wpi.wpilibVersion= "2021.424242.+"
+// wpi.maven.useFrcMavenLocalDevelopment = true
+// wpi.wpilibVersion= "2021.424242.+" 
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
@@ -60,7 +60,8 @@ dependencies {
     // Enable simulation gui support. Must check the box in vscode to enable support
     // upon debugging
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
-    simulation "edu.wpi.first.halsim:halsim_nt_bridge:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"  //wpk
+    simulation "edu.wpi.first.halsim:halsim_ws_server:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"  //wpk
+    //simulation "edu.wpi.first.halsim:halsim_nt_bridge:${wpi.wpilibVersion}:${wpi.platforms.desktop}@zip"  //wpk
 
 }
 

@@ -16,8 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DriveDistance;
-
-
+import frc.robot.commands.DriveUntilClose;
 import frc.robot.subsystems.ArmSubsystem;
 
 import frc.robot.subsystems.IntakeSubsystem;
@@ -27,6 +26,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 
 
@@ -41,6 +41,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
+import edu.wpi.first.wpilibj.Compressor;
 
 
 
@@ -59,6 +60,9 @@ public class RobotContainer {
   private DriveSubsystem driveSubsystem ;
   // A simple auto routine that drives forward a specified distance, and then stops.
   private Command simpleAuto ; 
+
+  private AnalogInput distanceSensor;
+  private DriveUntilClose driveUntilCloseCommand ;
 
   
   // Declarations for Arm subsystem
@@ -79,7 +83,7 @@ public class RobotContainer {
   boolean intakeOpen = false ;
 
 
-
+  Compressor compressor = new Compressor(0);
 
 
   /**
@@ -92,8 +96,8 @@ public class RobotContainer {
 
       controller = new Joystick(Constants.joystickPort);
 
-
-
+      compressor.setClosedLoopControl(true);
+      compressor.setClosedLoopControl(false);      
 
 
       //--------------------------------------------
@@ -110,13 +114,17 @@ public class RobotContainer {
             )
         );
 
-      simpleAuto = new DriveDistance(60, 0.5, driveSubsystem);
+      simpleAuto = new DriveDistance(60, 0.8, driveSubsystem);
+
+      distanceSensor = new AnalogInput(2) ;
+      driveUntilCloseCommand = new DriveUntilClose(36, 0.8, driveSubsystem, distanceSensor) ;
+
 
       //--------------------------------------------
       // Set up the arm subsystem
       //--------------------------------------------
       armSubsystem = new ArmSubsystem() ;
-      armExtendButton = new JoystickButton(controller, 1);
+      armExtendButton = new JoystickButton(controller, 2);
       armExtendButton.whenPressed(() -> 
          { armExtended = !armExtended ;
           if (armExtended) {
@@ -132,7 +140,7 @@ public class RobotContainer {
       // Set up the intake subsystem
       //--------------------------------------------
       intake = new IntakeSubsystem() ;
-      intakeButton = new JoystickButton(controller, 2);
+      intakeButton = new JoystickButton(controller, 3);
       intakeButton.whenPressed(() -> 
          { intakeOpen = !intakeOpen ;
           if (intakeOpen) {
@@ -163,6 +171,18 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return simpleAuto ;
+//    return simpleAuto ;
+    return driveUntilCloseCommand ;
   } 
+
+
+
+
+  public Command getTestCommand() {
+    // An ExampleCommand will run in autonomous
+    return driveUntilCloseCommand ;
+  } 
+
+
+
 }
